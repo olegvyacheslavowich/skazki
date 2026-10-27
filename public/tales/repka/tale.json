@@ -1,0 +1,679 @@
+{
+  "id": "repka",
+  "title": "Репка",
+  "version": 1,
+  "pages": [
+    {
+      "id": "p1",
+      "text": "Посадил дед репку. Выросла репка большая-пребольшая.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 560,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "hello"
+          },
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "state": "small",
+            "onTap": "grow"
+          }
+        ],
+        "actions": {
+          "hello": [
+            {
+              "target": "ded",
+              "animation": "hop",
+              "sfx": "boop"
+            }
+          ],
+          "grow": [
+            {
+              "target": "repka",
+              "animation": "grow",
+              "sfx": "grow"
+            },
+            {
+              "target": "repka",
+              "fx": "sparkle",
+              "delayMs": 700
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p2",
+      "text": "Пошёл дед репку рвать. Тянет-потянет, вытянуть не может.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullFail",
+              "staggerMs": 60,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 200
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 420
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p3",
+      "text": "Позвал дед бабку. Бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          },
+          {
+            "id": "babka",
+            "sprite": "babka",
+            "x": 560,
+            "y": 560,
+            "scale": 0.95,
+            "onTap": "pull",
+            "z": 9
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded",
+            "babka"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullFail",
+              "staggerMs": 60,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 200
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 420
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p4",
+      "text": "Позвала бабка внучку. Внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          },
+          {
+            "id": "babka",
+            "sprite": "babka",
+            "x": 560,
+            "y": 560,
+            "scale": 0.95,
+            "onTap": "pull",
+            "z": 9
+          },
+          {
+            "id": "vnuchka",
+            "sprite": "vnuchka",
+            "x": 450,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 8
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded",
+            "babka",
+            "vnuchka"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullFail",
+              "staggerMs": 60,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 200
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 420
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p5",
+      "text": "Позвала внучка Жучку. Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          },
+          {
+            "id": "babka",
+            "sprite": "babka",
+            "x": 560,
+            "y": 560,
+            "scale": 0.95,
+            "onTap": "pull",
+            "z": 9
+          },
+          {
+            "id": "vnuchka",
+            "sprite": "vnuchka",
+            "x": 450,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 8
+          },
+          {
+            "id": "zhuchka",
+            "sprite": "zhuchka",
+            "x": 362,
+            "y": 560,
+            "scale": 0.9,
+            "onTap": "pull",
+            "z": 7
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded",
+            "babka",
+            "vnuchka",
+            "zhuchka"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullFail",
+              "staggerMs": 60,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 200
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 420
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p6",
+      "text": "Позвала Жучка кошку. Кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          },
+          {
+            "id": "babka",
+            "sprite": "babka",
+            "x": 560,
+            "y": 560,
+            "scale": 0.95,
+            "onTap": "pull",
+            "z": 9
+          },
+          {
+            "id": "vnuchka",
+            "sprite": "vnuchka",
+            "x": 450,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 8
+          },
+          {
+            "id": "zhuchka",
+            "sprite": "zhuchka",
+            "x": 362,
+            "y": 560,
+            "scale": 0.9,
+            "onTap": "pull",
+            "z": 7
+          },
+          {
+            "id": "koshka",
+            "sprite": "koshka",
+            "x": 278,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 6
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded",
+            "babka",
+            "vnuchka",
+            "zhuchka",
+            "koshka"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullFail",
+              "staggerMs": 60,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 200
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 420
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "p7",
+      "text": "Позвала кошка мышку. Мышка за кошку, кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут — вытянули репку!",
+      "scene": {
+        "background": "field",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 820,
+            "y": 560,
+            "onTap": "wobble",
+            "z": 0
+          },
+          {
+            "id": "ded",
+            "sprite": "ded",
+            "x": 680,
+            "y": 560,
+            "scale": 1.0,
+            "onTap": "pull",
+            "z": 10
+          },
+          {
+            "id": "babka",
+            "sprite": "babka",
+            "x": 560,
+            "y": 560,
+            "scale": 0.95,
+            "onTap": "pull",
+            "z": 9
+          },
+          {
+            "id": "vnuchka",
+            "sprite": "vnuchka",
+            "x": 450,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 8
+          },
+          {
+            "id": "zhuchka",
+            "sprite": "zhuchka",
+            "x": 362,
+            "y": 560,
+            "scale": 0.9,
+            "onTap": "pull",
+            "z": 7
+          },
+          {
+            "id": "koshka",
+            "sprite": "koshka",
+            "x": 278,
+            "y": 560,
+            "scale": 0.85,
+            "onTap": "pull",
+            "z": 6
+          },
+          {
+            "id": "myshka",
+            "sprite": "myshka",
+            "x": 212,
+            "y": 560,
+            "scale": 0.9,
+            "onTap": "pull",
+            "z": 5
+          }
+        ],
+        "groups": {
+          "chain": [
+            "ded",
+            "babka",
+            "vnuchka",
+            "zhuchka",
+            "koshka",
+            "myshka"
+          ]
+        },
+        "actions": {
+          "pull": [
+            {
+              "target": "chain",
+              "animation": "pullStrain",
+              "staggerMs": 50,
+              "sfx": "heave"
+            },
+            {
+              "target": "repka",
+              "animation": "resist",
+              "delayMs": 150
+            },
+            {
+              "target": "repka",
+              "fx": "dust",
+              "delayMs": 350
+            },
+            {
+              "target": "chain",
+              "animation": "pullSuccess",
+              "delayMs": 1500,
+              "staggerMs": 40
+            },
+            {
+              "target": "repka",
+              "animation": "popOut",
+              "delayMs": 1500,
+              "sfx": "tada"
+            },
+            {
+              "target": "repka",
+              "fx": "burst",
+              "delayMs": 1560
+            },
+            {
+              "target": "repka",
+              "fx": "shake",
+              "delayMs": 1560
+            },
+            {
+              "target": "repka",
+              "fx": "confetti",
+              "delayMs": 1900
+            }
+          ],
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "end",
+      "text": "Вот и сказке конец, а кто слушал — молодец!",
+      "scene": {
+        "background": "meadow",
+        "elements": [
+          {
+            "id": "repka",
+            "sprite": "repka",
+            "x": 520,
+            "y": 540,
+            "scale": 1.15,
+            "onTap": "wobble"
+          },
+          {
+            "id": "ded",
+            "sprite": "ded-front",
+            "x": 190,
+            "y": 600,
+            "scale": 0.62,
+            "onTap": "party"
+          },
+          {
+            "id": "babka",
+            "sprite": "babka-front",
+            "x": 285,
+            "y": 600,
+            "scale": 0.589,
+            "onTap": "party"
+          },
+          {
+            "id": "vnuchka",
+            "sprite": "vnuchka-front",
+            "x": 375,
+            "y": 600,
+            "scale": 0.527,
+            "onTap": "party"
+          },
+          {
+            "id": "zhuchka",
+            "sprite": "zhuchka",
+            "x": 665,
+            "y": 600,
+            "scale": 0.558,
+            "onTap": "party"
+          },
+          {
+            "id": "koshka",
+            "sprite": "koshka",
+            "x": 750,
+            "y": 600,
+            "scale": 0.527,
+            "onTap": "party"
+          },
+          {
+            "id": "myshka",
+            "sprite": "myshka",
+            "x": 830,
+            "y": 600,
+            "scale": 0.558,
+            "onTap": "party"
+          }
+        ],
+        "groups": {
+          "all": [
+            "ded",
+            "babka",
+            "vnuchka",
+            "zhuchka",
+            "koshka",
+            "myshka"
+          ]
+        },
+        "actions": {
+          "wobble": [
+            {
+              "target": "repka",
+              "animation": "wobble",
+              "sfx": "boop"
+            },
+            {
+              "target": "repka",
+              "fx": "sparkle",
+              "delayMs": 200
+            }
+          ],
+          "party": [
+            {
+              "target": "all",
+              "animation": "hop",
+              "staggerMs": 90,
+              "sfx": "tada"
+            },
+            {
+              "target": "repka",
+              "fx": "confetti"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

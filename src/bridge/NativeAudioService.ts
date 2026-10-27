@@ -1,0 +1,83 @@
+import type { AudioService, NarrationListener, NarrationRequest } from '../audio/AudioService';
+import { Sfx } from '../audio/Sfx';
+import type { PluginListenerHandle, TaleAudioPlugin } from './TaleAudioPlugin';
+
+/**
+ * Реализация AudioService поверх нативного плагина (KMP).
+ * Голос и музыка — нативно (стабильная задержка, фоновый режим, аудиофокус, звонки);
+ * короткие эффекты на тапы остаются в Web Audio.
+ */
+export class NativeAudioService implements AudioService {
+  readonly kind = 'native' as const;
+  private ctx: AudioContext | null = null;
+  private sfx: Sfx | null = null;
+  private musicOn = true;
+  private openedTale: string | null = null;
+  private current: { pageId: string; listener: NarrationListener } | null = null;
+  private handles: PluginListenerHandle[] = [];
+
+  constructor(private readonly plugin: TaleAudioPlugin) {}
+
+  async unlock(): Promise<void> {
+    if (!this.ctx) {
+      this.ctx = new AudioContext();
+      this.sfx = new Sfx(this.ctx);
+      this.handles.push(
+        await this.plugin.addListener('word', (e) => {
+          if (e.pageId === this.current?.pageId) this.current.listener.onWord(e.index);
+        }),
+        await this.plugin.addListener('ended', (e) => {
+          if (e.pageId !== this.current?.pageId) return;
+          const l = this.current.listener;
+          this.current = null;
+          l.onEnd();
+        }),
+      );
+    }
+    await this.ctx.resume();
+    await this.plugin.setMusic({ enabled: this.musicOn });
+  }
+
+  narrate(req: NarrationRequest, listener: NarrationListener): void {
+    this.current = { pageId: req.page.id, listener };
+    const open = this.openedTale === req.taleId ? Promise.resolve() : this.plugin.openTale({ taleId: req.taleId });
+    open
+      .then(() => {
+        this.openedTale = req.taleId;
+        return this.plugin.narrate({ taleId: req.taleId, pageId: req.page.id });
+      })
+      .catch((err) => {
+        console.error('TaleAudio.narrate', err);
+        this.current = null;
+        listener.onEnd();
+      });
+  }
+
+  stopNarration(): void {
+    this.current = null;
+    void this.plugin.stop();
+  }
+
+  setMusicEnabled(on: boolean): void {
+    this.musicOn = on;
+    void this.plugin.setMusic({ enabled: on });
+  }
+
+  isMusicEnabled(): boolean {
+    return this.musicOn;
+  }
+
+  playSfx(name: string): void {
+    this.sfx?.play(name);
+  }
+
+  suspend(): void {
+    void this.plugin.pause();
+    this.ctx?.suspend();
+  }
+
+  resume(): void {
+    void this.plugin.resume();
+    this.ctx?.resume();
+  }
+}
