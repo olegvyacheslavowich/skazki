@@ -1,6 +1,8 @@
-import type { Tale, TaleIndex } from './types';
+import type { Lang, Tale, TaleIndex } from './types';
 import { hasAnimation } from './animations';
 import { hasEffect } from './effects';
+import { glossaryKey } from './i18n';
+import { splitWords } from './words';
 import type { SpriteRegistry } from '../art/sprites';
 
 /**
@@ -51,7 +53,40 @@ export class TaleRepository {
         }
       }
     }
+    problems.push(...this.validateTranslations(tale));
     if (problems.length) throw new Error(`Сказка «${tale.id}» содержит ошибки:\n${problems.join('\n')}`);
+  }
+
+  /** У каждой страницы есть текст перевода, и каждое его слово есть в словарике (тап по слову). */
+  private validateTranslations(tale: Tale): string[] {
+    const problems: string[] = [];
+    const base = tale.lang ?? 'ru';
+    const langs = Object.keys(tale.translations ?? {}) as Lang[];
+    for (const lang of langs) {
+      const tr = tale.translations![lang]!;
+      if (lang === base) problems.push(`перевод на ${lang} совпадает с основным языком сказки`);
+      if (!tr.title) problems.push(`${lang}: нет названия`);
+      const glossary = tr.glossary ?? {};
+      for (const p of tale.pages) {
+        const text = p.translations?.[lang]?.text;
+        if (!text) {
+          problems.push(`${p.id}: нет текста на ${lang}`);
+          continue;
+        }
+        const missing = new Set(
+          splitWords(text)
+            .map((w) => glossaryKey(w.text))
+            .filter((k) => k && !(k in glossary)),
+        );
+        if (missing.size) problems.push(`${p.id}: нет в словарике ${lang}: ${[...missing].join(', ')}`);
+      }
+    }
+    for (const p of tale.pages) {
+      for (const lang of Object.keys(p.translations ?? {})) {
+        if (!langs.includes(lang as Lang)) problems.push(`${p.id}: перевод на ${lang}, которого нет в tale.translations`);
+      }
+    }
+    return problems;
   }
 
   private async fetchJson<T>(url: string): Promise<T> {

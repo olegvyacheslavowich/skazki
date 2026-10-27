@@ -28,9 +28,8 @@ export class WebAudioService implements AudioService {
   narrate(req: NarrationRequest, listener: NarrationListener): void {
     this.stopNarration();
     this.music?.duck(true);
-    const engine = req.page.narration?.src ? this.recorded : this.tts;
+    const engine = req.narration?.src ? this.recorded : this.tts;
     engine.start(req, {
-      onWord: (i) => listener.onWord(i),
       onEnd: () => {
         this.music?.duck(false);
         listener.onEnd();

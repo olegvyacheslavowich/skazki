@@ -1,5 +1,5 @@
 {
   "tales": [
-    { "id": "repka", "title": "Репка", "coverSprite": "repka" }
+    { "id": "repka", "title": "Репка", "coverSprite": "repka", "translations": { "en": { "title": "The Giant Turnip" } } }
   ]
 }

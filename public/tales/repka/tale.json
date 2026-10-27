@@ -1,11 +1,57 @@
 {
   "id": "repka",
   "title": "Репка",
+  "lang": "ru",
   "version": 1,
+  "translations": {
+    "en": {
+      "title": "The Giant Turnip",
+      "glossary": {
+        "grandpa": "дедушка",
+        "grandma": "бабушка",
+        "granddaughter": "внучка",
+        "dog": "собака (Жучка)",
+        "cat": "кошка",
+        "mouse": "мышка",
+        "turnip": "репка",
+        "planted": "посадил",
+        "grew": "выросла",
+        "big": "большая",
+        "very": "очень",
+        "went": "пошёл",
+        "to": "чтобы",
+        "pull": "тянуть",
+        "pulls": "тянет",
+        "called": "позвал, позвала",
+        "he": "он",
+        "they": "они",
+        "it": "её (репку)",
+        "out": "наружу (pull out — вытянуть)",
+        "and": "и",
+        "but": "но",
+        "can't": "не может, не могут",
+        "comes": "выходит (out comes — вытянули)",
+        "a": "одна, какая-то (артикль)",
+        "the": "эта, этот (артикль)",
+        "our": "наша",
+        "tale": "сказка",
+        "is": "есть (is done — закончилась)",
+        "done": "закончена, сделано",
+        "well": "хорошо (well done — молодец)",
+        "little": "маленький",
+        "one": "один (little one — малыш)"
+      }
+    }
+  },
   "pages": [
     {
       "id": "p1",
       "text": "Посадил дед репку. Выросла репка большая-пребольшая.",
+      "translations": {
+        "en": {
+          "text": "Grandpa planted a turnip. The turnip grew big — very, very big!"
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -52,6 +98,11 @@
     {
       "id": "p2",
       "text": "Пошёл дед репку рвать. Тянет-потянет, вытянуть не может.",
+      "translations": {
+        "en": {
+          "text": "Grandpa went to pull the turnip. He pulls and pulls, but he can't pull it out."
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -110,6 +161,11 @@
     {
       "id": "p3",
       "text": "Позвал дед бабку. Бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "translations": {
+        "en": {
+          "text": "Grandpa called Grandma. Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -178,6 +234,11 @@
     {
       "id": "p4",
       "text": "Позвала бабка внучку. Внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "translations": {
+        "en": {
+          "text": "Grandma called the granddaughter. The granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -256,6 +317,11 @@
     {
       "id": "p5",
       "text": "Позвала внучка Жучку. Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "translations": {
+        "en": {
+          "text": "The granddaughter called the dog. The dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -344,6 +410,11 @@
     {
       "id": "p6",
       "text": "Позвала Жучка кошку. Кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "translations": {
+        "en": {
+          "text": "The dog called the cat. The cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -442,6 +513,11 @@
     {
       "id": "p7",
       "text": "Позвала кошка мышку. Мышка за кошку, кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут — вытянули репку!",
+      "translations": {
+        "en": {
+          "text": "The cat called the mouse. The mouse pulls the cat, the cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull — and out comes the turnip!"
+        }
+      },
       "scene": {
         "background": "field",
         "elements": [
@@ -577,6 +653,11 @@
     {
       "id": "end",
       "text": "Вот и сказке конец, а кто слушал — молодец!",
+      "translations": {
+        "en": {
+          "text": "Our tale is done. Well done, little one!"
+        }
+      },
       "scene": {
         "background": "meadow",
         "elements": [

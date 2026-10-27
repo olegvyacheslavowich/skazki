@@ -23,9 +23,6 @@ export class NativeAudioService implements AudioService {
       this.ctx = new AudioContext();
       this.sfx = new Sfx(this.ctx);
       this.handles.push(
-        await this.plugin.addListener('word', (e) => {
-          if (e.pageId === this.current?.pageId) this.current.listener.onWord(e.index);
-        }),
         await this.plugin.addListener('ended', (e) => {
           if (e.pageId !== this.current?.pageId) return;
           const l = this.current.listener;
@@ -39,12 +36,12 @@ export class NativeAudioService implements AudioService {
   }
 
   narrate(req: NarrationRequest, listener: NarrationListener): void {
-    this.current = { pageId: req.page.id, listener };
+    this.current = { pageId: req.pageId, listener };
     const open = this.openedTale === req.taleId ? Promise.resolve() : this.plugin.openTale({ taleId: req.taleId });
     open
       .then(() => {
         this.openedTale = req.taleId;
-        return this.plugin.narrate({ taleId: req.taleId, pageId: req.page.id });
+        return this.plugin.narrate({ taleId: req.taleId, pageId: req.pageId, lang: req.lang });
       })
       .catch((err) => {
         console.error('TaleAudio.narrate', err);

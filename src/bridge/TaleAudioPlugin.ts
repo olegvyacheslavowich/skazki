@@ -9,7 +9,8 @@
  *  - web передаёт только идентификаторы (taleId/pageId); тексты, тайминги и пути к аудио нативная
  *    сторона читает сама из того же tale.json — один источник правды;
  *  - все методы асинхронные и идемпотентные;
- *  - индексы слов считаются по splitWords(page.text) — KMP повторяет то же правило (\S+).
+ *  - язык чтения приходит в narrate: текст и голос берутся из page.translations[lang]
+ *    (или из самой страницы, если lang — основной язык сказки).
  *
  * Когда в проект будет добавлен @capacitor/core, объект плагина получаем так:
  *   import { registerPlugin } from '@capacitor/core';
@@ -17,12 +18,14 @@
  * До этого используем глобальный window.Capacitor (см. getNativeTaleAudio).
  */
 
+import type { Lang } from '../engine/types';
+
 export interface TaleAudioPlugin {
   /** подготовить сказку: нативная сторона читает tale.json, предзагружает аудио */
   openTale(options: { taleId: string }): Promise<void>;
 
-  /** прочитать страницу; события word/ended придут через addListener */
-  narrate(options: { taleId: string; pageId: string }): Promise<void>;
+  /** прочитать страницу на языке lang; событие ended придёт через addListener */
+  narrate(options: { taleId: string; pageId: string; lang: Lang }): Promise<void>;
   stop(): Promise<void>;
 
   setMusic(options: { enabled: boolean }): Promise<void>;
@@ -31,13 +34,7 @@ export interface TaleAudioPlugin {
   pause(): Promise<void>;
   resume(): Promise<void>;
 
-  addListener(event: 'word', cb: (e: WordEvent) => void): Promise<PluginListenerHandle>;
   addListener(event: 'ended', cb: (e: EndedEvent) => void): Promise<PluginListenerHandle>;
-}
-
-export interface WordEvent {
-  pageId: string;
-  index: number;
 }
 
 export interface EndedEvent {

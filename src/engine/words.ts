@@ -13,28 +13,19 @@ export function splitWords(text: string): WordSpan[] {
   return out;
 }
 
-/** Индекс слова по позиции символа (для boundary-событий speechSynthesis). */
-export function wordIndexAt(words: WordSpan[], charIndex: number): number {
-  for (let i = words.length - 1; i >= 0; i--) {
-    if (words[i].start <= charIndex) return i;
-  }
-  return 0;
-}
-
 /**
- * Грубая оценка таймингов слов для темпа детского чтения.
- * Используется, когда нет ни записанных таймингов, ни boundary-событий от TTS.
+ * Грубая оценка длительности чтения в темпе детской сказки, мс.
+ * Нужна, когда голоса нет (нет TTS или голоса для языка): кнопка «Читать» вернётся
+ * в исходное состояние примерно тогда, когда взрослый дочитал бы страницу вслух.
  */
-export function estimateWordStarts(words: WordSpan[], rate = 1): number[] {
-  const starts: number[] = [];
+export function estimateReadingMs(text: string, rate = 1): number {
   let t = 0;
-  for (const w of words) {
-    starts.push(t);
+  for (const w of splitWords(text)) {
     const letters = w.text.replace(/[^\p{L}]/gu, '').length;
     let d = 140 + letters * 62;
     if (/[.!?]$/.test(w.text)) d += 420;
     else if (/[,—:;-]$/.test(w.text) || w.text === '—') d += 220;
     t += d / rate;
   }
-  return starts;
+  return t;
 }

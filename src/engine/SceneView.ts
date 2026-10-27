@@ -95,13 +95,16 @@ export class SceneView {
   }
 
   /**
-   * Сцена никогда не обрезается по бокам (там персонажи): на широком экране — заполняем (slice),
-   * на узком/портретном — вписываем по ширине и прижимаем к низу, сверху остаётся небо.
+   * Сцена никогда не обрезается по бокам (там персонажи):
+   *  - широкая страница — заполняем (slice), лишнее срезаем сверху: низ с персонажами важнее неба;
+   *  - высокая страница (портрет, большой экран) — вписываем по ширине и ставим по центру;
+   *    сверху и снизу видно продолжение неба и земли из фона (svg.scene { overflow: visible }).
    */
   private fitAspect(): void {
     const wide = this.host.clientWidth / Math.max(1, this.host.clientHeight) >= 1000 / 700;
-    this.svg.setAttribute('preserveAspectRatio', wide ? 'xMidYMax slice' : 'xMidYMax meet');
+    this.svg.setAttribute('preserveAspectRatio', wide ? 'xMidYMax slice' : 'xMidYMid meet');
   }
+
 
   render(scene: Scene): void {
     this.scene = scene;

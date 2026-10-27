@@ -1,4 +1,4 @@
-import type { Page } from '../engine/types';
+import type { Lang, Narration } from '../engine/types';
 
 /**
  * Единственная точка, через которую UI работает со звуком.
@@ -27,12 +27,17 @@ export interface NarrationRequest {
   taleId: string;
   /** базовый URL папки сказки — для относительных путей к аудиофайлам */
   taleBaseUrl: string;
-  page: Page;
+  pageId: string;
+  /** язык, на котором читаем */
+  lang: Lang;
+  /** текст страницы на этом языке */
+  text: string;
+  /** записанный голос на этом языке; нет — TTS-заглушка */
+  narration?: Narration;
 }
 
 export interface NarrationListener {
-  /** началось слово с индексом index (по splitWords(page.text)) */
-  onWord(index: number): void;
+  /** дочитали или остановили */
   onEnd(): void;
 }
 

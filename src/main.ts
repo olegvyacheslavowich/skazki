@@ -7,6 +7,8 @@ import { createAudioService } from './audio/createAudioService';
 import { TaleRepository } from './engine/TaleRepository';
 import { Library } from './ui/Library';
 import { Reader } from './ui/Reader';
+import { loadLang, saveLang } from './ui/lang';
+import type { Lang } from './engine/types';
 
 const app = document.getElementById('app')!;
 const sprites = builtinSprites;
@@ -14,12 +16,17 @@ const audio = createAudioService();
 const repo = new TaleRepository('./tales', sprites);
 
 let screen: { destroy(): void } | null = null;
+let lang = loadLang();
+const setLang = (l: Lang) => {
+  lang = l;
+  saveLang(l);
+};
 
 async function showLibrary(): Promise<void> {
   screen?.destroy();
   try {
     const index = await repo.index();
-    screen = new Library(app, index, sprites, (id) => void openTale(id));
+    screen = new Library(app, index, sprites, lang, (id) => void openTale(id), setLang);
   } catch (e) {
     showError(e);
   }
@@ -38,6 +45,8 @@ async function openTale(id: string): Promise<void> {
       audio,
       sprites,
       autoNarrate: true,
+      lang,
+      onLangChange: setLang,
       onExit: () => void showLibrary(),
     });
   } catch (e) {

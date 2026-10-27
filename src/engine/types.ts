@@ -4,6 +4,9 @@
  * Эту же модель позже повторит KMP (commonMain, kotlinx.serialization).
  */
 
+/** Языки текста сказок и интерфейса. */
+export type Lang = 'ru' | 'en';
+
 export interface TaleIndex {
   tales: TaleIndexEntry[];
 }
@@ -13,29 +16,50 @@ export interface TaleIndexEntry {
   title: string;
   /** спрайт для обложки в библиотеке */
   coverSprite: string;
+  /** название на других языках */
+  translations?: Partial<Record<Lang, { title: string }>>;
 }
 
 export interface Tale {
   id: string;
   title: string;
+  /** язык основного текста (title, page.text, page.narration); по умолчанию ru */
+  lang?: Lang;
   /** версия контента — нужна для будущей доставки пакетов (Play Asset Delivery / сервер) */
   version: number;
   pages: Page[];
+  /** другие языки сказки; у каждой страницы тогда есть page.translations[lang] */
+  translations?: Partial<Record<Lang, TaleTranslation>>;
+}
+
+export interface TaleTranslation {
+  title: string;
+  /**
+   * Словарик для тапа по слову: слово (нижний регистр, без знаков препинания по краям)
+   * → перевод на основной язык сказки. В тексте перевода не должно быть слов вне словарика —
+   * TaleRepository проверяет это при загрузке.
+   */
+  glossary: Record<string, string>;
 }
 
 export interface Page {
   id: string;
-  /** текст страницы; слова разбиваются по пробелам — индексы слов используются для подсветки */
+  /** текст страницы на основном языке сказки */
   text: string;
   scene: Scene;
+  narration?: Narration;
+  /** текст и голос страницы на других языках */
+  translations?: Partial<Record<Lang, PageTranslation>>;
+}
+
+export interface PageTranslation {
+  text: string;
   narration?: Narration;
 }
 
 export interface Narration {
   /** записанный голос (относительно папки сказки). Нет — используем TTS как временную заглушку */
   src?: string;
-  /** время начала каждого слова в мс (для караоке-подсветки записанного голоса) */
-  wordStartsMs?: number[];
 }
 
 export interface Scene {

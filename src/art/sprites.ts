@@ -110,9 +110,12 @@ const SPRITES: Record<string, string> = {
       </radialGradient>
     </defs>`,
 
-  /* ---------------- фон: слои для параллакса ---------------- */
+  /* ---------------- фон: слои для параллакса ----------------
+   * Небо и земля продолжаются далеко за viewBox (сплошным цветом края градиента): на высоком экране
+   * сцена стоит по центру, и сверху/снизу видно продолжение неба и земли, а не пустой фон. */
   field: `
     <g class="layer" data-depth="0.05">
+      <rect x="-60" y="-1040" width="1120" height="1010" fill="#8fcdec"/>
       <rect x="-60" y="-40" width="1120" height="780" fill="url(#sky)"/>
       <g class="sun"><circle cx="850" cy="115" r="110" fill="url(#sunGlow)"/></g>
     </g>
@@ -144,6 +147,7 @@ const SPRITES: Record<string, string> = {
     </g>
     <g class="layer" data-depth="0.6">
       <rect x="-60" y="540" width="1120" height="200" fill="url(#ground)"/>
+      <rect x="-60" y="739" width="1120" height="1000" fill="#d9a86d"/>
       <path d="M-60 540 Q250 526 500 541 T1060 537 V558 Q500 566 -60 556Z" fill="#7cc263"/>
       <g fill="#d8a56a" opacity=".8">
         <rect x="40" y="596" width="300" height="12" rx="6"/><rect x="420" y="606" width="260" height="12" rx="6"/>

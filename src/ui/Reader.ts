@@ -1,10 +1,12 @@
-import type { Tale } from '../engine/types';
+import type { Lang, Tale } from '../engine/types';
 import type { AudioService } from '../audio/AudioService';
 import type { SpriteRegistry } from '../art/sprites';
 import { SceneView } from '../engine/SceneView';
 import { TextPanel } from './TextPanel';
 import { icon } from './icons';
-import { PageTurn } from './PageTurn';
+import { PageTurn, type Spread } from './PageTurn';
+import { glossaryFor, pageContent, resolveLang, taleLangs, taleTitle } from '../engine/i18n';
+import { LANG_NAMES } from './lang';
 
 const HOLD_TO_EXIT_MS = 1500;
 
@@ -14,12 +16,16 @@ export interface ReaderOptions {
   audio: AudioService;
   sprites: SpriteRegistry;
   autoNarrate: boolean;
+  /** желаемый язык; если у сказки его нет — основной язык сказки */
+  lang: Lang;
+  onLangChange?(lang: Lang): void;
   onExit(): void;
 }
 
 /** Экран чтения: слева сцена (картинка + анимации), справа текст и озвучка. */
 export class Reader {
   private readonly root: HTMLElement;
+  private readonly pageEl: HTMLElement;
   private readonly scene: SceneView;
   private readonly text: TextPanel;
   private readonly narrateBtn: HTMLButtonElement;
@@ -27,11 +33,17 @@ export class Reader {
   private readonly nextBtn: HTMLButtonElement;
   private readonly dots: HTMLElement;
   private readonly musicBtn: HTMLButtonElement;
+  private readonly langBtn: HTMLButtonElement;
+  private readonly titleEl: HTMLElement;
   private readonly turner: PageTurn;
+  private readonly langs: Lang[];
+  private lang: Lang;
   private pageIndex = -1;
   private narrating = false;
 
   constructor(host: HTMLElement, private readonly o: ReaderOptions) {
+    this.langs = taleLangs(o.tale);
+    this.lang = resolveLang(o.tale, o.lang);
     this.root = document.createElement('div');
     this.root.className = 'reader';
     this.root.innerHTML = `
@@ -42,10 +54,11 @@ export class Reader {
             ${icon('home')}<svg class="ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20"/></svg>
           </button>
           <span class="hint">держите, чтобы выйти</span>
-          <h1 class="title">${o.tale.title}</h1>
+          <h1 class="title"></h1>
+          <button class="round small lang" aria-label="Язык сказки"${this.langs.length > 1 ? '' : ' hidden'}></button>
           <button class="round small music" aria-label="Музыка"></button>
         </header>
-        <p class="text" lang="ru"></p>
+        <p class="text"></p>
         <div class="controls">
           <button class="round nav prev" aria-label="Назад">${icon('prev')}</button>
           <button class="round narrate" aria-label="Читать">${icon('play')}</button>
@@ -57,13 +70,16 @@ export class Reader {
 
     const $ = <T extends Element>(s: string) => this.root.querySelector<T>(s)!;
     this.scene = new SceneView($('.stage'), o.sprites, { onSfx: (n) => o.audio.playSfx(n) });
-    this.text = new TextPanel($('.text'));
+    this.pageEl = $('.page');
+    this.text = new TextPanel($('.text'), this.pageEl);
     this.narrateBtn = $('.narrate');
     this.prevBtn = $('.prev');
     this.nextBtn = $('.next');
     this.dots = $('.dots');
     this.musicBtn = $('.music');
-    this.turner = new PageTurn($('.stage'), this.root);
+    this.langBtn = $('.lang');
+    this.titleEl = $('.title');
+    this.turner = new PageTurn(this.root, $('.stage'), this.pageEl);
 
     this.narrateBtn.addEventListener('click', () => (this.narrating ? this.stopNarration() : this.narrate()));
     this.prevBtn.addEventListener('click', () => this.go(this.pageIndex - 1));
@@ -72,8 +88,12 @@ export class Reader {
       o.audio.setMusicEnabled(!o.audio.isMusicEnabled());
       this.renderMusicBtn();
     });
+    this.langBtn.addEventListener('click', () => {
+      this.setLang(this.langs[(this.langs.indexOf(this.lang) + 1) % this.langs.length]);
+    });
     this.setupHoldToExit($('.home'));
     this.renderMusicBtn();
+    this.renderLang();
     this.go(0);
   }
 
@@ -87,52 +107,81 @@ export class Reader {
     const pages = this.o.tale.pages;
     if (index < 0 || index >= pages.length) return;
     this.stopNarration();
+    this.text.hideTranslation();
     const first = this.pageIndex < 0;
     const forward = index >= this.pageIndex;
+    // снимок уходящего разворота — пока на экране ещё старые картинка и текст
+    const from = first ? null : this.snapshot();
     this.pageIndex = index;
     const page = pages[index];
 
-    this.root.classList.remove('turn-fwd', 'turn-back');
-    void this.root.offsetWidth; // перезапуск CSS-анимации текста
-    this.root.classList.add(forward ? 'turn-fwd' : 'turn-back');
-
-    const from = first ? null : this.scene.snapshot();
     this.scene.render(page.scene);
-    if (from) {
-      this.turner.turn(from, forward ? this.scene.snapshot() : null, forward);
-      this.o.audio.playSfx('page');
-    }
-    this.text.setText(page.text);
+    this.renderText();
     this.prevBtn.disabled = index === 0;
     this.nextBtn.disabled = index === pages.length - 1;
     this.dots.innerHTML = pages.map((_, i) => `<i class="${i === index ? 'on' : ''}"></i>`).join('');
 
+    const turned = from !== null && this.turner.turn(from, this.snapshot(), forward);
+    if (from) this.o.audio.playSfx('page');
+    // текст «въезжает» сам, только если страницу не перелистнули (первая страница, reduced motion)
+    this.root.classList.remove('turn-fwd', 'turn-back');
+    if (!turned) {
+      void this.root.offsetWidth; // перезапуск CSS-анимации текста
+      this.root.classList.add(forward ? 'turn-fwd' : 'turn-back');
+    }
+
     if (this.o.autoNarrate) window.setTimeout(() => this.pageIndex === index && this.narrate(), first ? 450 : 950);
+  }
+
+  /** Сменить язык прямо на странице: без перелистывания, текст просто въезжает заново. */
+  private setLang(lang: Lang): void {
+    if (lang === this.lang) return;
+    this.stopNarration();
+    this.lang = lang;
+    this.renderLang();
+    this.renderText();
+    this.root.classList.remove('turn-fwd', 'turn-back');
+    void this.root.offsetWidth;
+    this.root.classList.add('turn-fwd');
+    this.o.onLangChange?.(lang);
+  }
+
+  private renderLang(): void {
+    this.titleEl.textContent = taleTitle(this.o.tale, this.lang);
+    this.langBtn.textContent = LANG_NAMES[this.lang].short;
+    this.langBtn.setAttribute('aria-label', `Язык: ${LANG_NAMES[this.lang].full}`);
+  }
+
+  private renderText(): void {
+    const c = pageContent(this.o.tale, this.o.tale.pages[this.pageIndex], this.lang);
+    this.text.setText(c.text, c.lang, glossaryFor(this.o.tale, c.lang));
+  }
+
+  private snapshot(): Spread {
+    return { scene: this.scene.snapshot(), page: this.pageEl.cloneNode(true) as HTMLElement };
   }
 
   private narrate(): void {
     const page = this.o.tale.pages[this.pageIndex];
+    const c = pageContent(this.o.tale, page, this.lang);
     this.narrating = true;
     this.renderNarrateBtn();
-    this.text.clear();
     this.o.audio.narrate(
-      { taleId: this.o.tale.id, taleBaseUrl: this.o.taleBaseUrl, page },
+      { taleId: this.o.tale.id, taleBaseUrl: this.o.taleBaseUrl, pageId: page.id, lang: c.lang, text: c.text, narration: c.narration },
       {
-        onWord: (i) => this.text.highlight(i),
         onEnd: () => {
           this.narrating = false;
           this.renderNarrateBtn();
-          window.setTimeout(() => !this.narrating && this.text.clear(), 900);
         },
       },
     );
   }
 
+
   private stopNarration(): void {
     this.o.audio.stopNarration();
     this.narrating = false;
     this.renderNarrateBtn();
-    this.text.clear();
   }
 
   private renderNarrateBtn(): void {
