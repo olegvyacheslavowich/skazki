@@ -67,6 +67,10 @@ export class TaleRepository {
       if (lang === base) problems.push(`перевод на ${lang} совпадает с основным языком сказки`);
       if (!tr.title) problems.push(`${lang}: нет названия`);
       const glossary = tr.glossary ?? {};
+      if (tr.pronunciation) {
+        const noPron = Object.keys(glossary).filter((k) => !tr.pronunciation![k]);
+        if (noPron.length) problems.push(`${lang}: нет произношения (npm run pronounce): ${noPron.join(', ')}`);
+      }
       for (const p of tale.pages) {
         const text = p.translations?.[lang]?.text;
         if (!text) {

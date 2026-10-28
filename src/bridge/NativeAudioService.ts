@@ -1,5 +1,7 @@
 import type { AudioService, NarrationListener, NarrationRequest } from '../audio/AudioService';
 import { Sfx } from '../audio/Sfx';
+import { WebSpeechNarration } from '../audio/WebSpeechNarration';
+import type { Lang } from '../engine/types';
 import type { PluginListenerHandle, TaleAudioPlugin } from './TaleAudioPlugin';
 
 /**
@@ -15,6 +17,8 @@ export class NativeAudioService implements AudioService {
   private openedTale: string | null = null;
   private current: { pageId: string; listener: NarrationListener } | null = null;
   private handles: PluginListenerHandle[] = [];
+  /** запасной голос для слов, пока плагин не умеет speakWord (WKWebView умеет, Android WebView — обычно нет) */
+  private webTts: WebSpeechNarration | null = null;
 
   constructor(private readonly plugin: TaleAudioPlugin) {}
 
@@ -52,7 +56,18 @@ export class NativeAudioService implements AudioService {
 
   stopNarration(): void {
     this.current = null;
+    this.webTts?.stop();
     void this.plugin.stop();
+  }
+
+  speakWord(word: string, lang: Lang): void {
+    this.stopNarration();
+    if (this.plugin.speakWord) {
+      this.plugin.speakWord({ text: word, lang }).catch((err) => console.error('TaleAudio.speakWord', err));
+      return;
+    }
+    this.webTts ??= new WebSpeechNarration();
+    this.webTts.speakWord(word, lang, () => {});
   }
 
   setMusicEnabled(on: boolean): void {

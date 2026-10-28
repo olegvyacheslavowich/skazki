@@ -40,6 +40,13 @@ export interface TaleTranslation {
    * TaleRepository проверяет это при загрузке.
    */
   glossary: Record<string, string>;
+  /**
+   * Произношение слов словарика буквами основного языка сказки («turnip» → «тёрнип»),
+   * ударение — знаком ́ в словах из 2+ слогов. Заполняется `npm run pronounce`
+   * (scripts/pronunciation.mjs), ручные правки скрипт не перезаписывает.
+   * Если поле есть, TaleRepository проверяет, что у каждого слова словарика есть произношение.
+   */
+  pronunciation?: Record<string, string>;
 }
 
 export interface Page {

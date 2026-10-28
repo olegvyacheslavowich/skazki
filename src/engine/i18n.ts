@@ -38,6 +38,11 @@ export function glossaryFor(tale: Tale, lang: Lang): Record<string, string> | nu
   return lang === (tale.lang ?? 'ru') ? null : (tale.translations?.[lang]?.glossary ?? null);
 }
 
+/** Произношение слов для облачка — тоже только на языке перевода. */
+export function pronunciationFor(tale: Tale, lang: Lang): Record<string, string> | null {
+  return lang === (tale.lang ?? 'ru') ? null : (tale.translations?.[lang]?.pronunciation ?? null);
+}
+
 /** Ключ слова в словарике: нижний регистр, без знаков препинания по краям («Turnip!» → «turnip»). */
 export function glossaryKey(word: string): string {
   return word

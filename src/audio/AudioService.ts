@@ -14,7 +14,13 @@ export interface AudioService {
   /** вызвать по первому жесту пользователя (политики автовоспроизведения браузеров/iOS) */
   unlock(): Promise<void>;
   narrate(req: NarrationRequest, listener: NarrationListener): void;
+  /** останавливает и чтение страницы, и озвучку слова */
   stopNarration(): void;
+  /**
+   * Произнести одно слово (кнопка-динамик в облачке над словом). Прерывает чтение страницы.
+   * Сейчас — системный TTS; когда появятся записи слов, поменяется только реализация.
+   */
+  speakWord(word: string, lang: Lang): void;
   setMusicEnabled(on: boolean): void;
   isMusicEnabled(): boolean;
   playSfx(name: string): void;

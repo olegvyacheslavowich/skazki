@@ -3,6 +3,9 @@ import type { Lang } from '../engine/types';
 import { estimateReadingMs } from '../engine/words';
 
 const RATE = 0.85;
+/** отдельное слово — помедленнее, чтобы расслышать */
+const WORD_RATE = 0.7;
+const WORD_TIMEOUT_MS = 4000;
 const HAS_TTS = typeof window !== 'undefined' && typeof window.speechSynthesis !== 'undefined';
 
 const BCP47: Record<Lang, string> = { ru: 'ru-RU', en: 'en-US' };
@@ -80,6 +83,31 @@ export class WebSpeechNarration implements NarrationEngine {
     };
     // синтез так и не стартовал (нет голосов) — не держим кнопку в состоянии «читаю» вечно
     this.timers.push(window.setTimeout(silentReading, 1500));
+    speechSynthesis.speak(u);
+  }
+
+  /** Одно слово по кнопке в облачке. onEnd — когда договорили (или озвучить нечем). */
+  speakWord(word: string, lang: Lang, onEnd: () => void): void {
+    this.stop();
+    const session = this.session;
+    let ended = false;
+    const finish = () => {
+      if (ended || session !== this.session) return;
+      ended = true;
+      this.clearTimers();
+      onEnd();
+    };
+    if (!HAS_TTS) return finish();
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = BCP47[lang];
+    u.rate = WORD_RATE;
+    u.pitch = 1.05;
+    const voice = this.voices[lang];
+    if (voice) u.voice = voice;
+    u.onend = finish;
+    u.onerror = finish;
+    // страховка: WebView без onend / нет голосов
+    this.timers.push(window.setTimeout(finish, WORD_TIMEOUT_MS));
     speechSynthesis.speak(u);
   }
 

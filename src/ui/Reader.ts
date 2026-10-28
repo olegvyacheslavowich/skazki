@@ -5,7 +5,7 @@ import { SceneView } from '../engine/SceneView';
 import { TextPanel } from './TextPanel';
 import { icon } from './icons';
 import { PageTurn, type Spread } from './PageTurn';
-import { glossaryFor, pageContent, resolveLang, taleLangs, taleTitle } from '../engine/i18n';
+import { glossaryFor, pageContent, pronunciationFor, resolveLang, taleLangs, taleTitle } from '../engine/i18n';
 import { LANG_NAMES } from './lang';
 
 const HOLD_TO_EXIT_MS = 1500;
@@ -71,7 +71,10 @@ export class Reader {
     const $ = <T extends Element>(s: string) => this.root.querySelector<T>(s)!;
     this.scene = new SceneView($('.stage'), o.sprites, { onSfx: (n) => o.audio.playSfx(n) });
     this.pageEl = $('.page');
-    this.text = new TextPanel($('.text'), this.pageEl);
+    this.text = new TextPanel($('.text'), this.pageEl, (word, lang) => {
+      this.stopNarration();
+      o.audio.speakWord(word, lang);
+    });
     this.narrateBtn = $('.narrate');
     this.prevBtn = $('.prev');
     this.nextBtn = $('.next');
@@ -154,7 +157,7 @@ export class Reader {
 
   private renderText(): void {
     const c = pageContent(this.o.tale, this.o.tale.pages[this.pageIndex], this.lang);
-    this.text.setText(c.text, c.lang, glossaryFor(this.o.tale, c.lang));
+    this.text.setText(c.text, c.lang, glossaryFor(this.o.tale, c.lang), pronunciationFor(this.o.tale, c.lang));
   }
 
   private snapshot(): Spread {

@@ -1,4 +1,5 @@
 import type { AudioService, NarrationListener, NarrationRequest } from './AudioService';
+import type { Lang } from '../engine/types';
 import { Music } from './Music';
 import { Sfx } from './Sfx';
 import { RecordedNarration } from './RecordedNarration';
@@ -41,6 +42,12 @@ export class WebAudioService implements AudioService {
     this.tts.stop();
     this.recorded.stop();
     this.music?.duck(false);
+  }
+
+  speakWord(word: string, lang: Lang): void {
+    this.stopNarration();
+    this.music?.duck(true);
+    this.tts.speakWord(word, lang, () => this.music?.duck(false));
   }
 
   setMusicEnabled(on: boolean): void {

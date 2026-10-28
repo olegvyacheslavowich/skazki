@@ -236,6 +236,28 @@ button {
 }
 .word-bubble.below::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: var(--ink); }
 
+/* облачко: [динамик] произношение / перевод */
+.word-bubble { display: flex; align-items: center; gap: 12px; text-align: left; padding: 8px 16px 8px 8px; }
+.word-bubble .wb-text { display: flex; flex-direction: column; min-width: 0; }
+.word-bubble .wb-pron { font-size: 0.78em; font-weight: 700; color: #ffd27a; letter-spacing: 0.02em; }
+.word-bubble .wb-pron[hidden] { display: none; }
+.word-bubble .say {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition: transform 0.1s;
+}
+.word-bubble .say .ico { width: 28px; height: 28px; }
+.word-bubble.show .say { pointer-events: auto; }
+.word-bubble .say:active { transform: scale(0.92); }
+.word-bubble .say.pulse { animation: say-pulse 0.6s ease-out; }
+@keyframes say-pulse { 40% { transform: scale(1.12); } }
+
 .controls { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 3vw, 28px); }
 
 .round {

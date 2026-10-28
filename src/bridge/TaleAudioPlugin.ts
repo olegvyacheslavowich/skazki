@@ -26,7 +26,15 @@ export interface TaleAudioPlugin {
 
   /** прочитать страницу на языке lang; событие ended придёт через addListener */
   narrate(options: { taleId: string; pageId: string; lang: Lang }): Promise<void>;
+  /** останавливает и чтение страницы, и слово (speakWord) */
   stop(): Promise<void>;
+
+  /**
+   * Произнести одно слово (кнопка-динамик в облачке над словом), прервав чтение страницы.
+   * Android: TextToSpeech, iOS: AVSpeechSynthesizer; музыку на время слова приглушить.
+   * Необязательный: пока нативная сторона его не реализовала, web говорит сам через speechSynthesis.
+   */
+  speakWord?(options: { text: string; lang: Lang }): Promise<void>;
 
   setMusic(options: { enabled: boolean }): Promise<void>;
 
