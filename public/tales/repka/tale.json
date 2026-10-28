@@ -47,6 +47,7 @@
     {
       "id": "p1",
       "text": "Посадил дед репку. Выросла репка большая-пребольшая.",
+      "narration": { "src": "audio/p1.mp3" },
       "translations": {
         "en": {
           "text": "Grandpa planted a turnip. The turnip grew big — very, very big!"
@@ -98,6 +99,7 @@
     {
       "id": "p2",
       "text": "Пошёл дед репку рвать. Тянет-потянет, вытянуть не может.",
+      "narration": { "src": "audio/p2.mp3" },
       "translations": {
         "en": {
           "text": "Grandpa went to pull the turnip. He pulls and pulls, but he can't pull it out."
@@ -161,6 +163,7 @@
     {
       "id": "p3",
       "text": "Позвал дед бабку. Бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "narration": { "src": "audio/p3.mp3" },
       "translations": {
         "en": {
           "text": "Grandpa called Grandma. Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
@@ -234,6 +237,7 @@
     {
       "id": "p4",
       "text": "Позвала бабка внучку. Внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "narration": { "src": "audio/p4.mp3" },
       "translations": {
         "en": {
           "text": "Grandma called the granddaughter. The granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
@@ -317,6 +321,7 @@
     {
       "id": "p5",
       "text": "Позвала внучка Жучку. Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "narration": { "src": "audio/p5.mp3" },
       "translations": {
         "en": {
           "text": "The granddaughter called the dog. The dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
@@ -410,6 +415,7 @@
     {
       "id": "p6",
       "text": "Позвала Жучка кошку. Кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут, вытянуть не могут.",
+      "narration": { "src": "audio/p6.mp3" },
       "translations": {
         "en": {
           "text": "The dog called the cat. The cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
@@ -512,7 +518,8 @@
     },
     {
       "id": "p7",
-      "text": "Позвала кошка мышку. Мышка за кошку, кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут — вытянули репку!",
+      "text": "Позвала кошка мышку. Мышка за кошку, кошка за Жучку, Жучка за внучку, внучка за бабку, бабка за дедку, дедка за репку — тянут-потянут… и вытянули репку!",
+      "narration": { "src": "audio/p7.mp3" },
       "translations": {
         "en": {
           "text": "The cat called the mouse. The mouse pulls the cat, the cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull — and out comes the turnip!"
@@ -653,6 +660,7 @@
     {
       "id": "end",
       "text": "Вот и сказке конец, а кто слушал — молодец!",
+      "narration": { "src": "audio/end.mp3" },
       "translations": {
         "en": {
           "text": "Our tale is done. Well done, little one!"
