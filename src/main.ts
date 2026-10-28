@@ -8,11 +8,13 @@ import { TaleRepository } from './engine/TaleRepository';
 import { Library } from './ui/Library';
 import { Reader } from './ui/Reader';
 import { loadLang, saveLang } from './ui/lang';
+import { loadSoundOn } from './ui/prefs';
 import type { Lang } from './engine/types';
 
 const app = document.getElementById('app')!;
 const sprites = builtinSprites;
 const audio = createAudioService();
+audio.setSoundEnabled(loadSoundOn());
 const repo = new TaleRepository('./tales', sprites);
 
 let screen: { destroy(): void } | null = null;

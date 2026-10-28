@@ -192,6 +192,27 @@ export class SceneView {
     if (def?.onTap) this.runAction(def.onTap);
   }
 
+  /**
+   * Куда показать подсказку «нажми на героя»: первый интерактивный элемент страницы,
+   * чуть выше середины его фигуры. Координаты окна; null — на странице нечего нажимать.
+   */
+  hintPoint(): { x: number; y: number } | null {
+    const stage = this.host.getBoundingClientRect();
+    for (const n of this.nodes.values()) {
+      if (!n.def.onTap) continue;
+      const r = n.anim.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height * 0.42;
+      // фигура может быть частично срезана краем сцены
+      return {
+        x: Math.min(Math.max(x, stage.left + 24), stage.right - 24),
+        y: Math.min(Math.max(y, stage.top + 24), stage.bottom - 24),
+      };
+    }
+    return null;
+  }
+
   /** координаты экрана → координаты слоя частиц */
   private toScene(x: number, y: number): DOMPoint | null {
     const m = this.fx?.getScreenCTM();

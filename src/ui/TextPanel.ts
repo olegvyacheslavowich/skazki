@@ -27,11 +27,13 @@ export class TextPanel {
    * @param host    элемент с текстом
    * @param layer   позиционированный предок, в котором живёт облачко (чтобы его не обрезал скролл текста)
    * @param onSpeak нажали на динамик в облачке
+   * @param onWordShown показали облачко с переводом (человек понял, что слова нажимаются)
    */
   constructor(
     private readonly host: HTMLElement,
     private readonly layer: HTMLElement,
     private readonly onSpeak: SpeakWord,
+    private readonly onWordShown?: () => void,
   ) {
     this.bubble = document.createElement('div');
     this.bubble.className = 'word-bubble';
@@ -135,5 +137,15 @@ export class TextPanel {
     void this.bubble.offsetWidth; // перезапуск появления, если облачко уже было открыто
     this.bubble.classList.add('show');
     this.restartTimer();
+    this.onWordShown?.();
+  }
+
+  /** слово, на которое показать подсказку «нажми на слово»: первое длинное переводимое (координаты окна) */
+  hintPoint(): { x: number; y: number; top: number } | null {
+    const words = [...this.host.querySelectorAll<HTMLElement>('.w[data-tr]')];
+    const w = words.find((x) => (x.textContent ?? '').length >= 4) ?? words[0];
+    if (!w) return null;
+    const r = w.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.bottom - r.height * 0.2, top: r.top };
   }
 }

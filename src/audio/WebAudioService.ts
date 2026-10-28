@@ -11,7 +11,7 @@ export class WebAudioService implements AudioService {
   private ctx: AudioContext | null = null;
   private music: Music | null = null;
   private sfx: Sfx | null = null;
-  private musicOn = true;
+  private soundOn = true;
   private readonly tts = new WebSpeechNarration();
   private readonly recorded = new RecordedNarration();
 
@@ -23,7 +23,7 @@ export class WebAudioService implements AudioService {
       this.sfx = new Sfx(this.ctx);
     }
     if (this.ctx.state !== 'running') await this.ctx.resume();
-    if (this.musicOn) this.music!.start();
+    if (this.soundOn) this.music!.start();
   }
 
   narrate(req: NarrationRequest, listener: NarrationListener): void {
@@ -50,18 +50,22 @@ export class WebAudioService implements AudioService {
     this.tts.speakWord(word, lang, () => this.music?.duck(false));
   }
 
-  setMusicEnabled(on: boolean): void {
-    this.musicOn = on;
-    if (on) this.music?.start();
-    else this.music?.stop();
+  setSoundEnabled(on: boolean): void {
+    this.soundOn = on;
+    if (on) {
+      this.music?.start();
+    } else {
+      this.stopNarration();
+      this.music?.stop();
+    }
   }
 
-  isMusicEnabled(): boolean {
-    return this.musicOn;
+  isSoundEnabled(): boolean {
+    return this.soundOn;
   }
 
   playSfx(name: string): void {
-    this.sfx?.play(name);
+    if (this.soundOn) this.sfx?.play(name);
   }
 
   suspend(): void {

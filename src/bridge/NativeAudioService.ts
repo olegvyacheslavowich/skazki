@@ -13,7 +13,7 @@ export class NativeAudioService implements AudioService {
   readonly kind = 'native' as const;
   private ctx: AudioContext | null = null;
   private sfx: Sfx | null = null;
-  private musicOn = true;
+  private soundOn = true;
   private openedTale: string | null = null;
   private current: { pageId: string; listener: NarrationListener } | null = null;
   private handles: PluginListenerHandle[] = [];
@@ -36,7 +36,7 @@ export class NativeAudioService implements AudioService {
       );
     }
     await this.ctx.resume();
-    await this.plugin.setMusic({ enabled: this.musicOn });
+    await this.plugin.setMusic({ enabled: this.soundOn });
   }
 
   narrate(req: NarrationRequest, listener: NarrationListener): void {
@@ -70,17 +70,18 @@ export class NativeAudioService implements AudioService {
     this.webTts.speakWord(word, lang, () => {});
   }
 
-  setMusicEnabled(on: boolean): void {
-    this.musicOn = on;
+  setSoundEnabled(on: boolean): void {
+    this.soundOn = on;
+    if (!on) this.stopNarration();
     void this.plugin.setMusic({ enabled: on });
   }
 
-  isMusicEnabled(): boolean {
-    return this.musicOn;
+  isSoundEnabled(): boolean {
+    return this.soundOn;
   }
 
   playSfx(name: string): void {
-    this.sfx?.play(name);
+    if (this.soundOn) this.sfx?.play(name);
   }
 
   suspend(): void {

@@ -7,8 +7,20 @@ import { icon } from './icons';
 import { PageTurn, type Spread } from './PageTurn';
 import { glossaryFor, pageContent, pronunciationFor, resolveLang, taleLangs, taleTitle } from '../engine/i18n';
 import { LANG_NAMES } from './lang';
+import { Hints } from './Hints';
+import { isHintLearned, markHintLearned, saveSoundOn, type HintId } from './prefs';
 
 const HOLD_TO_EXIT_MS = 1500;
+/** подсказка появляется, когда страница уже перелистнулась и успокоилась */
+const HINT_DELAY_MS = 1400;
+/** после первого тапа по герою — пауза, прежде чем подсказать про слова */
+const HINT_NEXT_DELAY_MS = 2600;
+/** сколько висит подсказка; не выучили — покажется снова на следующей странице */
+const HINT_SHOW_MS = 6500;
+const HINT_TEXT: Record<HintId, string> = {
+  scene: 'Нажми на героя!',
+  words: 'Нажми на слово!',
+};
 
 export interface ReaderOptions {
   tale: Tale;
@@ -32,10 +44,13 @@ export class Reader {
   private readonly prevBtn: HTMLButtonElement;
   private readonly nextBtn: HTMLButtonElement;
   private readonly dots: HTMLElement;
-  private readonly musicBtn: HTMLButtonElement;
+  private readonly soundBtn: HTMLButtonElement;
   private readonly langBtn: HTMLButtonElement;
   private readonly titleEl: HTMLElement;
   private readonly turner: PageTurn;
+  private readonly hints: Hints;
+  private hintTimer = 0;
+  private readonly onResize = () => this.scheduleHint();
   private readonly langs: Lang[];
   private lang: Lang;
   private pageIndex = -1;
@@ -56,7 +71,7 @@ export class Reader {
           <span class="hint">держите, чтобы выйти</span>
           <h1 class="title"></h1>
           <button class="round small lang" aria-label="Язык сказки"${this.langs.length > 1 ? '' : ' hidden'}></button>
-          <button class="round small music" aria-label="Музыка"></button>
+          <button class="round small sound" aria-label="Звук"></button>
         </header>
         <p class="text"></p>
         <div class="controls">
@@ -69,38 +84,52 @@ export class Reader {
     host.appendChild(this.root);
 
     const $ = <T extends Element>(s: string) => this.root.querySelector<T>(s)!;
-    this.scene = new SceneView($('.stage'), o.sprites, { onSfx: (n) => o.audio.playSfx(n) });
-    this.pageEl = $('.page');
-    this.text = new TextPanel($('.text'), this.pageEl, (word, lang) => {
-      this.stopNarration();
-      o.audio.speakWord(word, lang);
+    this.scene = new SceneView($('.stage'), o.sprites, {
+      onSfx: (n) => o.audio.playSfx(n),
+      onTap: () => this.learned('scene'),
     });
+    this.pageEl = $('.page');
+    this.text = new TextPanel(
+      $('.text'),
+      this.pageEl,
+      (word, lang) => {
+        this.stopNarration();
+        this.ensureSound();
+        o.audio.speakWord(word, lang);
+      },
+      () => this.learned('words'),
+    );
     this.narrateBtn = $('.narrate');
     this.prevBtn = $('.prev');
     this.nextBtn = $('.next');
     this.dots = $('.dots');
-    this.musicBtn = $('.music');
+    this.soundBtn = $('.sound');
     this.langBtn = $('.lang');
     this.titleEl = $('.title');
     this.turner = new PageTurn(this.root, $('.stage'), this.pageEl);
+    this.hints = new Hints(this.root);
 
     this.narrateBtn.addEventListener('click', () => (this.narrating ? this.stopNarration() : this.narrate()));
     this.prevBtn.addEventListener('click', () => this.go(this.pageIndex - 1));
     this.nextBtn.addEventListener('click', () => this.go(this.pageIndex + 1));
-    this.musicBtn.addEventListener('click', () => {
-      o.audio.setMusicEnabled(!o.audio.isMusicEnabled());
-      this.renderMusicBtn();
+    this.soundBtn.addEventListener('click', () => {
+      this.setSound(!o.audio.isSoundEnabled());
+      if (!o.audio.isSoundEnabled()) this.stopNarration();
     });
     this.langBtn.addEventListener('click', () => {
       this.setLang(this.langs[(this.langs.indexOf(this.lang) + 1) % this.langs.length]);
     });
     this.setupHoldToExit($('.home'));
-    this.renderMusicBtn();
+    this.renderSoundBtn();
     this.renderLang();
+    window.addEventListener('resize', this.onResize);
     this.go(0);
   }
 
   destroy(): void {
+    clearTimeout(this.hintTimer);
+    window.removeEventListener('resize', this.onResize);
+    this.hints.destroy();
     this.o.audio.stopNarration();
     this.scene.destroy();
     this.root.remove();
@@ -133,7 +162,11 @@ export class Reader {
       this.root.classList.add(forward ? 'turn-fwd' : 'turn-back');
     }
 
-    if (this.o.autoNarrate) window.setTimeout(() => this.pageIndex === index && this.narrate(), first ? 450 : 950);
+    // при выключенном звуке сами не читаем: «Читать» по-прежнему включит звук и прочитает
+    if (this.o.autoNarrate && this.o.audio.isSoundEnabled()) {
+      window.setTimeout(() => this.pageIndex === index && this.o.audio.isSoundEnabled() && this.narrate(), first ? 450 : 950);
+    }
+    this.scheduleHint();
   }
 
   /** Сменить язык прямо на странице: без перелистывания, текст просто въезжает заново. */
@@ -147,6 +180,7 @@ export class Reader {
     void this.root.offsetWidth;
     this.root.classList.add('turn-fwd');
     this.o.onLangChange?.(lang);
+    this.scheduleHint();
   }
 
   private renderLang(): void {
@@ -165,6 +199,7 @@ export class Reader {
   }
 
   private narrate(): void {
+    this.ensureSound();
     const page = this.o.tale.pages[this.pageIndex];
     const c = pageContent(this.o.tale, page, this.lang);
     this.narrating = true;
@@ -193,10 +228,56 @@ export class Reader {
     this.narrateBtn.setAttribute('aria-label', this.narrating ? 'Остановить' : 'Читать');
   }
 
-  private renderMusicBtn(): void {
-    const on = this.o.audio.isMusicEnabled();
-    this.musicBtn.innerHTML = icon(on ? 'music' : 'musicOff');
-    this.musicBtn.classList.toggle('off', !on);
+  private setSound(on: boolean): void {
+    this.o.audio.setSoundEnabled(on);
+    saveSoundOn(on);
+    this.renderSoundBtn();
+  }
+
+  /** «Читать» и динамик в облачке — явная просьба послушать: выключенный звук включаем обратно */
+  private ensureSound(): void {
+    if (!this.o.audio.isSoundEnabled()) this.setSound(true);
+  }
+
+  private renderSoundBtn(): void {
+    const on = this.o.audio.isSoundEnabled();
+    this.soundBtn.innerHTML = icon(on ? 'speaker' : 'speakerOff');
+    this.soundBtn.classList.toggle('off', !on);
+    this.soundBtn.setAttribute('aria-label', on ? 'Выключить звук' : 'Включить звук');
+    this.soundBtn.setAttribute('aria-pressed', String(!on));
+  }
+
+  /* ---------- подсказки первого открытия ---------- */
+
+  /** Какую подсказку показать на этой странице: сначала про героев, потом (в переводе) про слова. */
+  private nextHint(): HintId | null {
+    if (!isHintLearned('scene') && this.scene.hintPoint()) return 'scene';
+    if (!isHintLearned('words') && this.text.hintPoint()) return 'words';
+    return null;
+  }
+
+  private scheduleHint(delay = HINT_DELAY_MS): void {
+    clearTimeout(this.hintTimer);
+    this.hints.hide();
+    const index = this.pageIndex;
+    const lang = this.lang;
+    this.hintTimer = window.setTimeout(() => {
+      if (index !== this.pageIndex || lang !== this.lang) return;
+      const id = this.nextHint();
+      const point = id === 'scene' ? this.scene.hintPoint() : id === 'words' ? this.text.hintPoint() : null;
+      if (!id || !point) return;
+      // про слова — подпись над словом и в пределах страницы: текст под рукой должен оставаться виден
+      const place = id === 'words' ? { above: true, bounds: this.pageEl.getBoundingClientRect() } : {};
+      this.hints.show(id, point, HINT_TEXT[id], place);
+      this.hintTimer = window.setTimeout(() => this.hints.hide(), HINT_SHOW_MS);
+    }, delay);
+  }
+
+  /** человек сделал то, чему учила подсказка: запоминаем и, если есть, ведём к следующей */
+  private learned(id: HintId): void {
+    if (isHintLearned(id)) return;
+    markHintLearned(id);
+    if (this.hints.current === id || this.hints.current === null) this.scheduleHint(HINT_NEXT_DELAY_MS);
   }
 
   /** «Родительский замок»: выход только долгим нажатием — случайный тап малыша не выкинет из сказки. */

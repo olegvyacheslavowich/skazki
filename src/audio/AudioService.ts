@@ -21,8 +21,13 @@ export interface AudioService {
    * Сейчас — системный TTS; когда появятся записи слов, поменяется только реализация.
    */
   speakWord(word: string, lang: Lang): void;
-  setMusicEnabled(on: boolean): void;
-  isMusicEnabled(): boolean;
+  /**
+   * Весь звук книжки: музыка, голос и эффекты тапов. Выключили — сразу тишина
+   * (музыка гаснет, чтение обрывается, тапы беззвучны). Авточтение UI сам не запускает, пока звук выключен.
+   */
+  setSoundEnabled(on: boolean): void;
+  isSoundEnabled(): boolean;
+  /** эффект тапа; при выключенном звуке — ничего */
   playSfx(name: string): void;
   /** приложение ушло в фон / вернулось */
   suspend(): void;
