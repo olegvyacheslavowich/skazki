@@ -50,7 +50,8 @@
       "narration": { "src": "audio/p1.mp3" },
       "translations": {
         "en": {
-          "text": "Grandpa planted a turnip. The turnip grew big — very, very big!"
+          "text": "Grandpa planted a turnip. The turnip grew big — very, very big!",
+          "narration": { "src": "audio/en/p1.mp3" }
         }
       },
       "scene": {
@@ -102,7 +103,8 @@
       "narration": { "src": "audio/p2.mp3" },
       "translations": {
         "en": {
-          "text": "Grandpa went to pull the turnip. He pulls and pulls, but he can't pull it out."
+          "text": "Grandpa went to pull the turnip. He pulls and pulls, but he can't pull it out.",
+          "narration": { "src": "audio/en/p2.mp3" }
         }
       },
       "scene": {
@@ -166,7 +168,8 @@
       "narration": { "src": "audio/p3.mp3" },
       "translations": {
         "en": {
-          "text": "Grandpa called Grandma. Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+          "text": "Grandpa called Grandma. Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out.",
+          "narration": { "src": "audio/en/p3.mp3" }
         }
       },
       "scene": {
@@ -240,7 +243,8 @@
       "narration": { "src": "audio/p4.mp3" },
       "translations": {
         "en": {
-          "text": "Grandma called the granddaughter. The granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+          "text": "Grandma called the granddaughter. The granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out.",
+          "narration": { "src": "audio/en/p4.mp3" }
         }
       },
       "scene": {
@@ -324,7 +328,8 @@
       "narration": { "src": "audio/p5.mp3" },
       "translations": {
         "en": {
-          "text": "The granddaughter called the dog. The dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+          "text": "The granddaughter called the dog. The dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out.",
+          "narration": { "src": "audio/en/p5.mp3" }
         }
       },
       "scene": {
@@ -418,7 +423,8 @@
       "narration": { "src": "audio/p6.mp3" },
       "translations": {
         "en": {
-          "text": "The dog called the cat. The cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out."
+          "text": "The dog called the cat. The cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull, but they can't pull it out.",
+          "narration": { "src": "audio/en/p6.mp3" }
         }
       },
       "scene": {
@@ -522,7 +528,8 @@
       "narration": { "src": "audio/p7.mp3" },
       "translations": {
         "en": {
-          "text": "The cat called the mouse. The mouse pulls the cat, the cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull — and out comes the turnip!"
+          "text": "The cat called the mouse. The mouse pulls the cat, the cat pulls the dog, the dog pulls the granddaughter, the granddaughter pulls Grandma, Grandma pulls Grandpa, Grandpa pulls the turnip — they pull and pull — and out comes the turnip!",
+          "narration": { "src": "audio/en/p7.mp3" }
         }
       },
       "scene": {
@@ -663,7 +670,8 @@
       "narration": { "src": "audio/end.mp3" },
       "translations": {
         "en": {
-          "text": "Our tale is done. Well done, little one!"
+          "text": "Our tale is done. Well done, little one!",
+          "narration": { "src": "audio/en/end.mp3" }
         }
       },
       "scene": {
